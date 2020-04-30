@@ -13,12 +13,14 @@ namespace Donuts.Models
 
         public DateTime ExperiationDate { get; set; }
 
-        [MinLength(10, ErrorMessage = "Domain name must be at least 10 characters long")]
+        [Required(ErrorMessage = "required")]
+        [MinLength(10)]
+        //[RegularExpression(@"^[a-zA-Z.]+$", ErrorMessage = "Use letters only please")]
         public string Name { get; set; }
 
         public DateTime RegistrationDate { get; set; }
 
-        public User User { get; set; }
+        public Customer User { get; set; }
 
         public int? UserId { get; set; }
 

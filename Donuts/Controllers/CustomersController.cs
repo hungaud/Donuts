@@ -12,32 +12,42 @@ namespace Donuts.Controllers
 {
     [Produces("application/json")]
     [Route("api/users")]
-    public class UsersController : ControllerBase
+    public class CustomersController : ControllerBase
     {
-        IUserRepository _userService;
+        IUserRepository _userRepository;
 
-        public UsersController(IUserRepository userService)
+        public CustomersController(IUserRepository userRepository)
         {
-            _userService = userService;
+            _userRepository = userRepository;
         }
 
 
         [HttpGet]
         public async Task<IActionResult> GetUser()
-        {
-            var allUser = _userService.GetAllUsers();
-            return Ok(allUser);
+            {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = _userRepository.GetAllCustomers();
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
         }
 
         [HttpGet("{id}")]
-        [Produces(typeof(DbSet<User>))]
+        [Produces(typeof(DbSet<Customer>))]
         public async Task<IActionResult> GetUser([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var user = await _userService.GetUser(id);
+            var user = await _userRepository.GetCustomer(id);
 
             if (user == null)
             {

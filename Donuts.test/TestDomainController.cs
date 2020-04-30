@@ -8,37 +8,37 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
+using Donuts.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace DonutsTest
 {
     public class TestDomainController
     {
-        //private readonly HttpClient _client;
 
         public TestDomainController()
         {
-            //var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            //_client = server.CreateClient()
         }
 
 
         [Fact]
         public async Task GetAllDomain()
         {
-
-            //int testSessionId = 123;
+            // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockUserRepo = new Mock<IUserRepository>();
             mockDomainRepo.Setup(repo => repo.GetAllDomains())
                 .Returns(CreateDomainTestData());
-            mockUserRepo.Setup(repo => repo.GetAllUsers())
-                .Returns(CreateUserTestData());
+            mockUserRepo.Setup(repo => repo.GetAllCustomers())
+                .Returns(CreateCustomerData());
 
+            // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockUserRepo.Object);
             var result = await controller.GetAllDomain() as OkObjectResult;
-            //var list = result.Value;
             var test = result.Value as IEnumerable<Domain>;
             var list = test.ToList();
+
+            // Assert
             Assert.Equal(2, list.Count);
             Assert.NotNull(result);
 
@@ -46,26 +46,83 @@ namespace DonutsTest
 
 
         [Fact]
-        public async Task GetDomain()
+        public async Task TestGetDomainById()
         {
+            // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockUserRepo = new Mock<IUserRepository>();
 
-            mockDomainRepo.Setup(repo => repo.GetAllDomains())
-                .Returns(CreateDomainTestData());
-            mockUserRepo.Setup(repo => repo.GetAllUsers())
-                .Returns(CreateUserTestData());
+            mockDomainRepo.Setup(repo => repo.GetDomain(1))
+                .ReturnsAsync(CreateDomainTestData()[0]);
 
+            // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockUserRepo.Object);
             var result = await controller.GetDomain(1);
 
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var res = okResult.Value;
-            //var res = Assert.IsType<IActionResult>(okResult.Value);
+            var res = Assert.IsType<Domain>(okResult.Value);
             var idea = res as Domain;
             Assert.Equal(1, idea.DomainId);
-            //Assert.Equal(1, notFoundObjectResult.Value);
+            Assert.Equal("abcdefghi.software", idea.Name);
+            Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
+        }
 
+        [Fact]
+        public async Task TestPostDomain()
+        {
+            // Arrange
+            var dto = new Domain()
+            {
+                DomainId = 1,
+                Name = "abcdefghi.software",
+                RegistrationDate = DateTime.Today,
+                UserId = 1,
+                User = new Customer()
+                {
+                    CustomerId = 1,
+                    CustomerName = "user1"
+                }
+            };
+
+            var experiationDuration = TimeDuration.YEAR;
+            int experiationLength = 1;
+            DateTime today = DateTime.Today;
+
+            dto.ExperiationDate = experiationDuration == TimeDuration.YEAR ? today.AddYears(experiationLength) : today.AddMonths(experiationLength);
+
+            var mockDomainRepo = new Mock<IDomainRepository>();
+            var mockUserRepo = new Mock<IUserRepository>();
+            mockDomainRepo.Setup(repo => repo.AddDomain(dto))
+                .ReturnsAsync(dto);
+            mockUserRepo.Setup(repo => repo.GetCustomer(1))
+                .ReturnsAsync(CreateCustomerData()[0]);
+
+
+            // Act
+            var controller = new DomainsController(mockDomainRepo.Object, mockUserRepo.Object);
+            SimulateValidation(dto, controller);
+            var result = await controller.PostDomain(dto);
+
+            // Assert
+            var okResult = Assert.IsType<CreatedAtActionResult>(result);
+            var res = Assert.IsType<Domain>(okResult.Value);
+            var idea = res as Domain;
+            Assert.Equal(1, idea.DomainId);
+            Assert.Equal("abcdefghi.software", idea.Name);
+            Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
+        }
+
+        // Handles Data Annotation validation
+        private void SimulateValidation(object model, DomainsController controller)
+        {
+            var validationContext = new ValidationContext(model, null, null);
+            var validationResults = new List<ValidationResult>();
+            Validator.TryValidateObject(model, validationContext, validationResults, true);
+            foreach (var validationResult in validationResults)
+            {
+                controller.ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
+            }
         }
 
         private List<Domain> CreateDomainTestData()
@@ -78,10 +135,10 @@ namespace DonutsTest
                 Name = "abcdefghi.software",
                 RegistrationDate = DateTime.Today,
                 UserId = 1,
-                User = new User()
+                User = new Customer()
                 {
-                    UserId = 1,
-                    UserName = "user1"
+                    CustomerId = 1,
+                    CustomerName = "user1"
                 }
             });
             session.Add(new Domain()
@@ -91,30 +148,29 @@ namespace DonutsTest
                 Name = "123456789.software",
                 RegistrationDate = DateTime.Today,
                 UserId = 1,
-                User = new User()
+                User = new Customer()
                 {
-                    UserId = 1,
-                    UserName = "user1"
+                    CustomerId = 1,
+                    CustomerName = "user1"
                 }
             });
 
             return session;
         }
 
-        private List<User> CreateUserTestData()
+        private List<Customer> CreateCustomerData()
         {
-            var session = new List<User>();
-            session.Add(new User()
+            var session = new List<Customer>();
+            session.Add(new Customer()
             {
-                UserId = 1,
-                UserName = "user1",
+                CustomerId = 1,
+                CustomerName = "user1",
                 Domains = CreateDomainTestData().ToList()
             });
-            session = new List<User>();
-            session.Add(new User()
+            session.Add(new Customer()
             {
-                UserId = 2,
-                UserName = "user2"
+                CustomerId = 2,
+                CustomerName = "user2"
             });
             return session;
         }

@@ -14,7 +14,7 @@ namespace Donuts.Models
         }
 
         public DbSet<Domain> Domain { get; set; }
-        public DbSet<User> User { get; set; }
+        public DbSet<Customer> User { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,9 +24,9 @@ namespace Donuts.Models
                 entity.HasIndex(e => e.Name).IsUnique();
             });
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<Customer>(entity =>
             {
-                entity.HasIndex(e => e.UserName).IsUnique();
+                entity.HasIndex(e => e.CustomerName).IsUnique();
 
                               
             });

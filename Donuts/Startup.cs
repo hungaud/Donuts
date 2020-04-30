@@ -32,7 +32,9 @@ namespace Donuts
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMvc().AddJsonOptions(option => option.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddScoped<IDomainRepository, DomainRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserRepository, CustomerRepository>();
+            services.AddMvc();
+            services.AddMvcCore().AddDataAnnotations();
 
             services.AddDbContext<DonutsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Development")));
         }

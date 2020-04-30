@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Donuts.Models;
@@ -106,7 +107,7 @@ namespace Donuts.Controllers
                 return BadRequest("Domain is not associated with a valid user");
             }
 
-            var user = _userRepository.GetUser(domain.UserId.GetValueOrDefault());
+            var user = _userRepository.GetCustomer(domain.UserId.GetValueOrDefault());
             if (user == null)
             {
                 return BadRequest("User is not valid for domain");
@@ -138,7 +139,7 @@ namespace Donuts.Controllers
                 return BadRequest("Domain is not associated with a valid user");
             }
 
-            var user = _userRepository.GetUser(domain.UserId.Value).Result;
+            var user = _userRepository.GetCustomer(domain.UserId.Value).Result;
             if (user == null)
             {
                 return BadRequest("User is not valid for domain");
