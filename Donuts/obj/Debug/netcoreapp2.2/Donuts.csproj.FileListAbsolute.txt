@@ -1,0 +1,14 @@
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\bin\Debug\netcoreapp2.2\Donuts.deps.json
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\bin\Debug\netcoreapp2.2\Donuts.runtimeconfig.json
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\bin\Debug\netcoreapp2.2\Donuts.runtimeconfig.dev.json
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\bin\Debug\netcoreapp2.2\Donuts.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\bin\Debug\netcoreapp2.2\Donuts.pdb
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.csproj.CoreCompileInputs.cache
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.RazorAssemblyInfo.cache
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.RazorAssemblyInfo.cs
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.AssemblyInfoInputs.cache
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.AssemblyInfo.cs
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.RazorTargetAssemblyInfo.cache
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.pdb
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts\obj\Debug\netcoreapp2.2\Donuts.csprojAssemblyReference.cache

@@ -1,0 +1,17 @@
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\xunit.runner.reporters.netcoreapp10.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\xunit.runner.utility.netcoreapp10.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\Donuts.test.deps.json
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\Donuts.test.runtimeconfig.json
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\Donuts.test.runtimeconfig.dev.json
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\Donuts.test.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\Donuts.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\Donuts.pdb
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\obj\Debug\netcoreapp2.2\Donuts.test.csprojAssemblyReference.cache
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\obj\Debug\netcoreapp2.2\Donuts.test.csproj.CoreCompileInputs.cache
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\obj\Debug\netcoreapp2.2\Donuts.test.AssemblyInfoInputs.cache
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\obj\Debug\netcoreapp2.2\Donuts.test.AssemblyInfo.cs
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\obj\Debug\netcoreapp2.2\Donuts.test.csproj.CopyComplete
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\bin\Debug\netcoreapp2.2\Donuts.test.pdb
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\obj\Debug\netcoreapp2.2\Donuts.test.dll
+C:\Users\Hung Auduong.000\source\repos\Donuts\Donuts.test\obj\Debug\netcoreapp2.2\Donuts.test.pdb
