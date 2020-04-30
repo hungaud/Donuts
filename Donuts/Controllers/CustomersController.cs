@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Donuts.Controllers
 {
     [Produces("application/json")]
-    [Route("api/users")]
+    [Route("api/customers")]
     public class CustomersController : ControllerBase
     {
         IUserRepository _userRepository;
