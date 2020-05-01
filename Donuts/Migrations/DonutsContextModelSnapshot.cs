@@ -35,7 +35,7 @@ namespace Donuts.Migrations
                         .IsUnique()
                         .HasFilter("[CustomerName] IS NOT NULL");
 
-                    b.ToTable("User");
+                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("Donuts.Models.Domain", b =>
@@ -44,31 +44,66 @@ namespace Donuts.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("CustomerId");
+
                     b.Property<DateTime>("ExperiationDate");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(10);
+                        .IsRequired();
 
                     b.Property<DateTime>("RegistrationDate");
 
-                    b.Property<int?>("UserId");
-
                     b.HasKey("DomainId");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL");
+                    b.HasIndex("CustomerId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Domain");
                 });
 
+            modelBuilder.Entity("Donuts.Models.Payment", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("Amount");
+
+                    b.Property<int>("CustomerId");
+
+                    b.Property<int>("DomainId");
+
+                    b.Property<DateTime?>("DueDate");
+
+                    b.HasKey("PaymentId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("Payment");
+                });
+
             modelBuilder.Entity("Donuts.Models.Domain", b =>
                 {
-                    b.HasOne("Donuts.Models.Customer", "User")
+                    b.HasOne("Donuts.Models.Customer", "Customer")
                         .WithMany("Domains")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("CustomerId");
+                });
+
+            modelBuilder.Entity("Donuts.Models.Payment", b =>
+                {
+                    b.HasOne("Donuts.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Donuts.Models.Domain", "Domain")
+                        .WithMany()
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

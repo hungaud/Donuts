@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 namespace Donuts.Repositories
 {
 
-    public interface IUserRepository
+    public interface ICustomerRepository
     {
         Task<Customer> GetCustomer(int id);
         IEnumerable<Customer> GetAllCustomers();
     }
 
-    public class CustomerRepository : IUserRepository
+    public class CustomerRepository : ICustomerRepository
     {
 
         private DonutsContext _context;
@@ -24,12 +24,12 @@ namespace Donuts.Repositories
 
         public IEnumerable<Customer> GetAllCustomers()
         {
-            return _context.User;
+            return _context.Customer;
         }
 
         public async Task<Customer> GetCustomer(int id)
         {
-            return await _context.User.SingleOrDefaultAsync(u => u.CustomerId == id);
+            return await _context.Customer.SingleOrDefaultAsync(u => u.CustomerId == id);
         }
 
     }

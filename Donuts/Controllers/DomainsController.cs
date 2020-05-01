@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Donuts.Models;
+using Donuts.Models.Enums;
 using Donuts.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,12 @@ namespace Donuts.Controllers
     {
 
         IDomainRepository _domainRepository;
-        IUserRepository _userRepository;
+        ICustomerRepository _customerRepository;
 
-        public DomainsController (IDomainRepository domainRepository, IUserRepository userRepository)
+        public DomainsController (IDomainRepository domainRepository, ICustomerRepository customerRepository)
         {
             _domainRepository = domainRepository;
-            _userRepository = userRepository;
+            _customerRepository = customerRepository;
         }
 
         [HttpGet("{id}")]
@@ -62,12 +63,12 @@ namespace Donuts.Controllers
             return new ObjectResult(domain);
         }
 
-        // GET: api/domain/fromuser/5
-        [HttpGet("fromuser/{id}")]
+        // GET: api/domain/fromcustomer/5
+        [HttpGet("fromcustomer/{id}")]
         [Produces(typeof(DbSet<Domain>))]
-        public IActionResult GetAllDomainFromUser([FromRoute] int id)
+        public IActionResult GetAllDomainFromCustomer([FromRoute] int id)
         {
-            return new ObjectResult(_domainRepository.GetAllDomainFromUser(id));
+            return new ObjectResult(_domainRepository.GetAllDomainFromCustomer(id));
         }
 
         [HttpGet]
@@ -102,21 +103,21 @@ namespace Donuts.Controllers
                 return BadRequest();
             }
 
-            if (domain.User == null || domain.UserId == null)
+            if (domain.Customer == null || domain.CustomerId == null)
             {
-                return BadRequest("Domain is not associated with a valid user");
+                return BadRequest("Domain is not associated with a valid customer");
             }
 
-            var user = _userRepository.GetCustomer(domain.UserId.GetValueOrDefault());
-            if (user == null)
+            var customer = _customerRepository.GetCustomer(domain.CustomerId.GetValueOrDefault());
+            if (customer == null)
             {
-                return BadRequest("User is not valid for domain");
+                return BadRequest("Customer is not valid for domain");
             }
 
             try
             {
                 await _domainRepository.UpdateDomain(domain);
-                return Ok(id);
+                return Ok(domain);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -125,30 +126,48 @@ namespace Donuts.Controllers
         }
 
         // POST: api/routines
-        [HttpPost]
+        [HttpPost("{timeduration}/{length}")]
         [Produces(typeof(DbSet<Domain>))]
-        public async Task<IActionResult> PostDomain([FromBody] Domain domain)
+        public async Task<IActionResult> PostDomain([FromBody] Domain domain, [FromRoute] TimeDuration timeduration, [FromRoute] int length)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if(domain.User == null || domain.UserId == null)
+            if(domain.Customer == null || domain.CustomerId == null)
             {
                 return BadRequest("Domain is not associated with a valid user");
             }
 
-            var user = _userRepository.GetCustomer(domain.UserId.Value).Result;
-            if (user == null)
+            var customer = _customerRepository.GetCustomer(domain.CustomerId.Value).Result;
+            if (customer == null)
             {
-                return BadRequest("User is not valid for domain");
+                return BadRequest("customer is not valid for domain");
             }
-
 
             await _domainRepository.AddDomain(domain);
 
             return CreatedAtAction("GetDomain", new { id = domain.DomainId }, domain);
+        }
+
+        [HttpDelete("{id}")]
+        [Produces(typeof(Domain))]
+        public async Task<IActionResult> DeleteDomain([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var domain = _domainRepository.GetDomain(id);
+            if (domain == null)
+            {
+                return NotFound();
+            }
+
+            await _domainRepository.DeleteDomain(id);
+
+            return Ok();
         }
     }
 }

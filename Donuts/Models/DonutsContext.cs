@@ -14,21 +14,19 @@ namespace Donuts.Models
         }
 
         public DbSet<Domain> Domain { get; set; }
-        public DbSet<Customer> User { get; set; }
+        public DbSet<Customer> Customer { get; set; }
+        public DbSet<Payment> Payment { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Domain>(entity =>
             {
-
                 entity.HasIndex(e => e.Name).IsUnique();
             });
 
             modelBuilder.Entity<Customer>(entity =>
             {
-                entity.HasIndex(e => e.CustomerName).IsUnique();
-
-                              
+                entity.HasIndex(e => e.CustomerName).IsUnique();                        
             });
         }
 

@@ -11,7 +11,7 @@ namespace Donuts.Repositories
     public interface IDomainRepository
     {
         Task<Domain> GetDomain(int id);
-        IEnumerable<Domain> GetAllDomainFromUser(int id);
+        IEnumerable<Domain> GetAllDomainFromCustomer(int id);
         Task<Domain> UpdateDomain(Domain domain);
         Task<Domain> DeleteDomain(int id);
         Task<Domain> AddDomain(Domain domain);
@@ -44,14 +44,14 @@ namespace Donuts.Repositories
             return domain;
         }
 
-        public IEnumerable<Domain> GetAllDomainFromUser(int id)
+        public IEnumerable<Domain> GetAllDomainFromCustomer(int id)
         {
             return _context.Domain.Where(d => d.DomainId == id);
         }
 
         public async Task<Domain> GetDomain(int id)
         {
-            return await _context.Domain.SingleOrDefaultAsync(d => d.DomainId == id);
+            return await _context.Domain.Where(d => d.DomainId == id).FirstOrDefaultAsync();
 
         }
 

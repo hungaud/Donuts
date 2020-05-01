@@ -26,7 +26,7 @@ namespace DonutsTest
         {
             // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
-            var mockUserRepo = new Mock<IUserRepository>();
+            var mockUserRepo = new Mock<ICustomerRepository>();
             mockDomainRepo.Setup(repo => repo.GetAllDomains())
                 .Returns(CreateDomainTestData());
             mockUserRepo.Setup(repo => repo.GetAllCustomers())
@@ -50,7 +50,7 @@ namespace DonutsTest
         {
             // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
-            var mockUserRepo = new Mock<IUserRepository>();
+            var mockUserRepo = new Mock<ICustomerRepository>();
 
             mockDomainRepo.Setup(repo => repo.GetDomain(1))
                 .ReturnsAsync(CreateDomainTestData()[0]);
@@ -69,21 +69,32 @@ namespace DonutsTest
         }
 
         [Fact]
-        public async Task TestPostDomain()
+        public void TestPostDomain()
         {
-            // Arrange
             var dto = new Domain()
             {
                 DomainId = 1,
                 Name = "abcdefghi.software",
                 RegistrationDate = DateTime.Today,
-                UserId = 1,
-                User = new Customer()
+                CustomerId = 1,
+                Customer = new Customer()
                 {
                     CustomerId = 1,
                     CustomerName = "user1"
                 }
             };
+
+            TestPostDomains(dto);
+            TestPostDomains(dto);
+        }
+
+        [Fact]
+#pragma warning disable xUnit1001 // Fact methods cannot have parameters
+        public async Task TestPostDomains(Domain dto)
+#pragma warning restore xUnit1001 // Fact methods cannot have parameters
+        {
+            // Arrange
+
 
             var experiationDuration = TimeDuration.YEAR;
             int experiationLength = 1;
@@ -92,7 +103,7 @@ namespace DonutsTest
             dto.ExperiationDate = experiationDuration == TimeDuration.YEAR ? today.AddYears(experiationLength) : today.AddMonths(experiationLength);
 
             var mockDomainRepo = new Mock<IDomainRepository>();
-            var mockUserRepo = new Mock<IUserRepository>();
+            var mockUserRepo = new Mock<ICustomerRepository>();
             mockDomainRepo.Setup(repo => repo.AddDomain(dto))
                 .ReturnsAsync(dto);
             mockUserRepo.Setup(repo => repo.GetCustomer(1))
@@ -101,8 +112,8 @@ namespace DonutsTest
 
             // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockUserRepo.Object);
-            SimulateValidation(dto, controller);
-            var result = await controller.PostDomain(dto);
+            SimulateModelValidation(dto, controller);
+            var result = await controller.PostDomain(dto, TimeDuration.YEAR, 1);
 
             // Assert
             var okResult = Assert.IsType<CreatedAtActionResult>(result);
@@ -114,7 +125,7 @@ namespace DonutsTest
         }
 
         // Handles Data Annotation validation
-        private void SimulateValidation(object model, DomainsController controller)
+        private void SimulateModelValidation(object model, DomainsController controller)
         {
             var validationContext = new ValidationContext(model, null, null);
             var validationResults = new List<ValidationResult>();
@@ -134,8 +145,8 @@ namespace DonutsTest
                 ExperiationDate = DateTime.Today.AddYears(1),
                 Name = "abcdefghi.software",
                 RegistrationDate = DateTime.Today,
-                UserId = 1,
-                User = new Customer()
+                CustomerId = 1,
+                Customer = new Customer()
                 {
                     CustomerId = 1,
                     CustomerName = "user1"
@@ -147,8 +158,8 @@ namespace DonutsTest
                 ExperiationDate = DateTime.Today.AddYears(1),
                 Name = "123456789.software",
                 RegistrationDate = DateTime.Today,
-                UserId = 1,
-                User = new Customer()
+                CustomerId = 1,
+                Customer = new Customer()
                 {
                     CustomerId = 1,
                     CustomerName = "user1"

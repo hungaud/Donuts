@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Donuts.Models.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -20,9 +21,9 @@ namespace Donuts.Models
 
         public DateTime RegistrationDate { get; set; }
 
-        public Customer User { get; set; }
+        public Customer Customer { get; set; }
 
-        public int? UserId { get; set; }
-
+        public int? CustomerId { get; set; }
+        
     }
 }
