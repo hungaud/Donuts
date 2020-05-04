@@ -13,6 +13,5 @@ namespace Donuts.Models
         public string ProvidersName { get; set; }
         public PublicKey PublicKey { get; set; }
         public int VerificationProviderId { get; set; }
-        
     }
 }

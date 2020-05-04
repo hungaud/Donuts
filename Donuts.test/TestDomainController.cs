@@ -36,7 +36,7 @@ namespace Donuts.test
 
             // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
-            var result = await controller.GetAllDomain() as OkObjectResult;
+            var result = controller.GetAllDomain() as OkObjectResult;
             var test = result.Value as IEnumerable<Domain>;
             var list = test.ToList();
 
@@ -67,7 +67,7 @@ namespace Donuts.test
             var idea = res as Domain;
             Assert.Equal(1, idea.DomainId);
             Assert.Equal("abcdefghi.software", idea.Name);
-            Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
+            Assert.Equal(DateTime.Today.AddYears(1), idea.ExpiriationDate);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace Donuts.test
             var idea = res as Domain;
             Assert.Equal(1, idea.DomainId);
             Assert.Equal("abcdefghi.software", idea.Name);
-            Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
+            Assert.Equal(DateTime.Today.AddYears(1), idea.ExpiriationDate);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Donuts.test
             var idea = res as Domain;
             Assert.Equal(1, idea.DomainId);
             Assert.Equal("abcdefghi.software", idea.Name);
-            Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
+            Assert.Equal(DateTime.Today.AddYears(1), idea.ExpiriationDate);
         }
 
         [Fact]
@@ -230,7 +230,7 @@ namespace Donuts.test
             var idea = res as Domain;
             Assert.Equal(1, idea.DomainId);
             Assert.Equal("abcdefghi.software", idea.Name);
-            Assert.Equal(DateTime.Today.AddYears(2), idea.ExperiationDate);
+            Assert.Equal(DateTime.Today.AddYears(2), idea.ExpiriationDate);
         }
 
         [Fact]
@@ -265,7 +265,7 @@ namespace Donuts.test
             session.Add(new Domain()
             {
                 DomainId = 1,
-                ExperiationDate = DateTime.Today.AddYears(1),
+                ExpiriationDate = DateTime.Today.AddYears(1),
                 Name = "abcdefghi.software",
                 RegistrationDate = DateTime.Today,
                 CustomerId = 1,
@@ -280,7 +280,7 @@ namespace Donuts.test
             session.Add(new Domain()
             {
                 DomainId = 2,
-                ExperiationDate = DateTime.Today.AddYears(1),
+                ExpiriationDate = DateTime.Today.AddYears(1),
                 Name = "abc",
                 RegistrationDate = DateTime.Today,
                 CustomerId = 1,

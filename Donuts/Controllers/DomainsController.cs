@@ -72,12 +72,12 @@ namespace Donuts.Controllers
         [Produces(typeof(DbSet<Domain>))]
         public IActionResult GetAllDomainFromCustomer([FromRoute] int id)
         {
-            return new ObjectResult(_domainRepository.GetAllDomainFromCustomer(id));
+            return Ok(_domainRepository.GetAllDomainFromCustomer(id));
         }
 
         [HttpGet]
         [Produces(typeof(DbSet<Domain>))]
-        public async Task<IActionResult> GetAllDomain()
+        public IActionResult GetAllDomain()
         {
             if (!ModelState.IsValid)
             {
@@ -95,7 +95,6 @@ namespace Donuts.Controllers
 
         [HttpPut("{username:alpha/{timeduration}/{length}}")]
         [HttpPost("{timeduration}/{length}")]
-
         [Produces(typeof(Domain))]
         public async Task<IActionResult> PutDomain([FromRoute] string name, [FromRoute] TimeDuration timeduration, 
             [FromRoute] int length, [FromBody] Domain domain)
@@ -124,8 +123,8 @@ namespace Donuts.Controllers
 
             try
             {
-                var originalExpiration = originalDomain.ExperiationDate;
-                domain.ExperiationDate = timeduration == TimeDuration.YEAR ? originalExpiration.AddYears(length) : originalExpiration.AddMonths(length);
+                var originalExpiration = originalDomain.ExpiriationDate;
+                domain.ExpiriationDate = timeduration == TimeDuration.YEAR ? originalExpiration.AddYears(length) : originalExpiration.AddMonths(length);
                 await _domainRepository.UpdateDomain(domain);
                 return Ok(domain);
             }
@@ -157,6 +156,7 @@ namespace Donuts.Controllers
             }
 
             // verify Customer's Contact-ID
+            // This is where it would verify public key as well, but it is not implemented.
             if(!string.IsNullOrEmpty(customer.ProviderName))
             {
                 var providers = _verificationProviderRepository.GetAllByName(customer.ProviderName);
@@ -176,7 +176,7 @@ namespace Donuts.Controllers
             }
 
             var today = DateTime.Today;
-            domain.ExperiationDate = timeduration == TimeDuration.YEAR ? today.AddYears(length) : today.AddMonths(length);
+            domain.ExpiriationDate = timeduration == TimeDuration.YEAR ? today.AddYears(length) : today.AddMonths(length);
 
             await _domainRepository.AddDomain(domain);
 

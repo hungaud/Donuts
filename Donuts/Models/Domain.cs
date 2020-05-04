@@ -12,7 +12,7 @@ namespace Donuts.Models
 
         public int DomainId { get; set; }
 
-        public DateTime ExperiationDate { get; set; }
+        public DateTime ExpiriationDate { get; set; }
 
         [Required(ErrorMessage = "required")]
         [MinLength(10)]

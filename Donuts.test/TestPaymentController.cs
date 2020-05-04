@@ -148,7 +148,7 @@ namespace Donuts.test
                 Domain = new Domain()
                 {
                     DomainId = 1,
-                    ExperiationDate = DateTime.Today.AddYears(1),
+                    ExpiriationDate = DateTime.Today.AddYears(1),
                     Name = "abcdefghi.software",
                     RegistrationDate = DateTime.Today,
                     CustomerId = 1,
