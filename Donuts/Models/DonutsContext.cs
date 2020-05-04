@@ -17,6 +17,8 @@ namespace Donuts.Models
         public DbSet<Customer> Customer { get; set; }
         public DbSet<Payment> Payment { get; set; }
 
+        public DbSet<VerificationProvider> VerificationProvider { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Domain>(entity =>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Donuts.Models
 {
@@ -7,6 +8,8 @@ namespace Donuts.Models
     {
         [CreditCard]
         public string CardNumber { get; set; }
+
+        public string ContactId { get; set; }
 
         public ICollection<Domain> Domains { get; set; }
 
@@ -16,6 +19,10 @@ namespace Donuts.Models
 
         //[Index(IsUnique = true)]
         public string CustomerName { get; set; }
+
+        public string ProviderName { get; set; }
+
+        public PublicKey PublicKey { get; set; }
 
     }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
 using Donuts.Models.Enums;
+using System.Text.RegularExpressions;
 
 namespace Donuts.test
 {
@@ -26,13 +27,15 @@ namespace Donuts.test
             // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
+
             mockDomainRepo.Setup(repo => repo.GetAllDomains())
                 .Returns(CreateDomainTestData());
             mockCustomerRepo.Setup(repo => repo.GetAllCustomers())
                 .Returns(CreateCustomerData());
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             var result = await controller.GetAllDomain() as OkObjectResult;
             var test = result.Value as IEnumerable<Domain>;
             var list = test.ToList();
@@ -49,12 +52,13 @@ namespace Donuts.test
             // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
 
             mockDomainRepo.Setup(repo => repo.GetDomain(1))
                 .ReturnsAsync(CreateDomainTestData()[0]);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             var result = await controller.GetDomain(1);
 
             // Assert
@@ -72,12 +76,13 @@ namespace Donuts.test
             // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
 
             mockDomainRepo.Setup(repo => repo.GetDomain("abcdefghi.software"))
                 .ReturnsAsync(CreateDomainTestData()[0]);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             var result = await controller.GetDomain("abcdefghi.software");
 
             // Assert
@@ -98,13 +103,17 @@ namespace Donuts.test
 
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
+
             mockDomainRepo.Setup(repo => repo.AddDomain(domainDTO))
                 .ReturnsAsync(domainDTO);
             mockCustomerRepo.Setup(repo => repo.GetCustomer(1))
                 .ReturnsAsync(customerDTO);
+            mockVerifyRepo.Setup(repo => repo.GetAllByName(customerDTO.ProviderName))
+                .Returns(CreateVerificationProvider());
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
@@ -115,6 +124,35 @@ namespace Donuts.test
             Assert.Equal(1, idea.DomainId);
             Assert.Equal("abcdefghi.software", idea.Name);
             Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
+        }
+
+        [Fact]
+        public async Task TestPostDomainsVerificationFailed()
+        {
+            // Arrange
+            var domainDTO = CreateDomainTestData()[0];
+            var customerDTO = CreateCustomerData()[0];
+            customerDTO.ProviderName = "";
+            customerDTO.ContactId = "123";
+
+            var mockDomainRepo = new Mock<IDomainRepository>();
+            var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
+
+            mockDomainRepo.Setup(repo => repo.AddDomain(domainDTO))
+                .ReturnsAsync(domainDTO);
+            mockCustomerRepo.Setup(repo => repo.GetCustomer(1))
+                .ReturnsAsync(customerDTO);
+            mockVerifyRepo.Setup(repo => repo.GetAllByName(customerDTO.ProviderName))
+                .Returns(CreateVerificationProvider());
+
+            // Act
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            SimulateModelValidation.Validate(domainDTO, controller);
+            var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
         // Should fail due to Domain name is < 10 characters
@@ -128,13 +166,15 @@ namespace Donuts.test
 
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
+
             mockDomainRepo.Setup(repo => repo.AddDomain(domainDTO))
                 .ReturnsAsync(domainDTO);
             mockCustomerRepo.Setup(repo => repo.GetCustomer(1))
                 .ReturnsAsync(customerDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
@@ -150,12 +190,13 @@ namespace Donuts.test
 
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
 
             mockDomainRepo.Setup(repo => repo.GetDomain(domainDTO.DomainId))
                 .ReturnsAsync(domainDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             var result = await controller.DeleteDomain(domainDTO.DomainId);
 
             // Assert
@@ -171,13 +212,15 @@ namespace Donuts.test
 
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
+
             mockDomainRepo.Setup(repo => repo.GetDomain(domainDTO.Name))
                 .ReturnsAsync(domainDTO);
             mockCustomerRepo.Setup(repo => repo.GetCustomer(1))
                 .ReturnsAsync(customerDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PutDomain("abcdefghi.software", TimeDuration.YEAR, 1, domainDTO);
 
@@ -199,31 +242,21 @@ namespace Donuts.test
 
             var mockDomainRepo = new Mock<IDomainRepository>();
             var mockCustomerRepo = new Mock<ICustomerRepository>();
+            var mockVerifyRepo = new Mock<IVerificationProviderRepository>();
+
             mockDomainRepo.Setup(repo => repo.GetDomain(domainDTO.Name))
                 .ReturnsAsync(domainDTO);
             mockCustomerRepo.Setup(repo => repo.GetCustomer(1))
                 .ReturnsAsync(customerDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PutDomain("abcdefgzzzzzz", TimeDuration.YEAR, 1, domainDTO);
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
         }
-
-        // Handles Data Annotation validation
-        //private void SimulateModelValidation(object model, DomainsController controller)
-        //{
-        //    var validationContext = new ValidationContext(model, null, null);
-        //    var validationResults = new List<ValidationResult>();
-        //    Validator.TryValidateObject(model, validationContext, validationResults, true);
-        //    foreach (var validationResult in validationResults)
-        //    {
-        //        controller.ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
-        //    }
-        //}
 
         private List<Domain> CreateDomainTestData()
         {
@@ -267,13 +300,30 @@ namespace Donuts.test
             {
                 CustomerId = 1,
                 CustomerName = "user1",
-                Domains = CreateDomainTestData().ToList()
+                Domains = CreateDomainTestData().ToList(),
+                ProviderName = "Provider-abc",
+                ContactId = "abc"
             });
             session.Add(new Customer()
             {
                 CustomerId = 2,
-                CustomerName = "user2"
+                CustomerName = "user2",
+                ProviderName = "Provider-abc",
+                ContactId = "abc"
             });
+            return session;
+        }
+
+        private List<VerificationProvider> CreateVerificationProvider()
+        {
+            var session = new List<VerificationProvider>();
+            session.Add(new VerificationProvider()
+            {
+                Format = new Regex("[a-zA-Z]+"),
+                ProvidersName = "Provider-abc",
+                VerificationProviderId = 1
+            });
+           
             return session;
         }
     }

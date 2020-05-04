@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Donuts.Models;
 using Donuts.Models.Enums;
@@ -19,11 +20,14 @@ namespace Donuts.Controllers
 
         IDomainRepository _domainRepository;
         ICustomerRepository _customerRepository;
+        IVerificationProviderRepository _verificationProviderRepository;
 
-        public DomainsController (IDomainRepository domainRepository, ICustomerRepository customerRepository)
+        public DomainsController (IDomainRepository domainRepository, ICustomerRepository customerRepository, 
+            IVerificationProviderRepository verificationProviderRepository)
         {
             _domainRepository = domainRepository;
             _customerRepository = customerRepository;
+            _verificationProviderRepository = verificationProviderRepository;
         }
 
         [HttpGet("{id}")]
@@ -150,6 +154,25 @@ namespace Donuts.Controllers
             if (customer == null)
             {
                 return BadRequest("customer is not valid for domain");
+            }
+
+            // verify Customer's Contact-ID
+            if(!string.IsNullOrEmpty(customer.ProviderName))
+            {
+                var providers = _verificationProviderRepository.GetAllByName(customer.ProviderName);
+                var verified = providers.Where(p => p.Format.IsMatch(customer.ContactId));
+                if(verified.Count() == 0)
+                {
+                    return BadRequest("No valid verification from Customer");
+                }
+            } else
+            {
+                var providers = _verificationProviderRepository.GetAllProviders();
+                var verified = providers.Where(p => p.Format.IsMatch(customer.ContactId));
+                if (verified.Count() == 0)
+                {
+                    return BadRequest("No valid verification from Customer");
+                }
             }
 
             var today = DateTime.Today;
