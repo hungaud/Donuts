@@ -89,16 +89,20 @@ namespace Donuts.Controllers
             return Ok(domain);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{username:alpha/{timeduration}/{length}}")]
+        [HttpPost("{timeduration}/{length}")]
+
         [Produces(typeof(Domain))]
-        public async Task<IActionResult> PutDomain([FromRoute] int id, [FromBody] Domain domain)
+        public async Task<IActionResult> PutDomain([FromRoute] string name, [FromRoute] TimeDuration timeduration, 
+            [FromRoute] int length, [FromBody] Domain domain)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != domain.DomainId)
+            var originalDomain = _domainRepository.GetDomain(name).Result;
+            if (originalDomain == null || originalDomain.DomainId != domain.DomainId)
             {
                 return BadRequest();
             }
@@ -108,7 +112,7 @@ namespace Donuts.Controllers
                 return BadRequest("Domain is not associated with a valid customer");
             }
 
-            var customer = _customerRepository.GetCustomer(domain.CustomerId.GetValueOrDefault());
+            var customer = await _customerRepository.GetCustomer(domain.CustomerId.GetValueOrDefault());
             if (customer == null)
             {
                 return BadRequest("Customer is not valid for domain");
@@ -116,6 +120,8 @@ namespace Donuts.Controllers
 
             try
             {
+                var originalExpiration = originalDomain.ExperiationDate;
+                domain.ExperiationDate = timeduration == TimeDuration.YEAR ? originalExpiration.AddYears(length) : originalExpiration.AddMonths(length);
                 await _domainRepository.UpdateDomain(domain);
                 return Ok(domain);
             }
@@ -162,7 +168,7 @@ namespace Donuts.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var domain = _domainRepository.GetDomain(id);
+            var domain = await _domainRepository.GetDomain(id);
             if (domain == null)
             {
                 return NotFound();

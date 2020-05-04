@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Donuts.Models
 {
     public class Customer
     {
+        [CreditCard]
+        public string CardNumber { get; set; }
 
         public ICollection<Domain> Domains { get; set; }
 
