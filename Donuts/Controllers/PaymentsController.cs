@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Donuts.Models;
+using Donuts.Models.Enums;
 using Donuts.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace Donuts.Controllers
         IPaymentRepository _paymentRepository;
         ICustomerRepository _customerRepository;
 
-        public PaymentsController(IPaymentRepository paymentRepository, CustomerRepository customerRepository)
+        public PaymentsController(IPaymentRepository paymentRepository, ICustomerRepository customerRepository)
         {
             _paymentRepository = paymentRepository;
             _customerRepository = customerRepository;
@@ -68,19 +69,20 @@ namespace Donuts.Controllers
             {
                 return BadRequest(ModelState);
             }
+
             if (id != payment.PaymentId)
             {
                 return BadRequest();
+            }
+            if (payment.Amount < 0)
+            {
+                return BadRequest("Payment amount can't be negative");
             }
             if (payment.Customer == null || payment.CustomerId == null || payment.Domain == null || payment.DomainId == null)
             {
                 return BadRequest("payment is not associated with a valid customer");
             }
-            var dueDate = GetLastDayOfMonth();
-            if (payment.DueDate != dueDate)
-            {
-                return BadRequest("Due Date is not at the last day of the Month");
-            }
+
 
             var customer = _customerRepository.GetCustomer(payment.CustomerId);
             if (customer == null)
@@ -90,6 +92,18 @@ namespace Donuts.Controllers
 
             try
             {
+                if (payment.Amount == payment.AmountPaid)
+                {
+                    payment.Amount = 0;
+                }
+                if(payment.Amount == 0)
+                {
+                    payment.Status = PaymentStatus.COMPLETE;
+                    payment.DueDate = null;
+                } else
+                {
+                    payment.Status = PaymentStatus.PROCESSING;
+                }
                 await _paymentRepository.UpdatePayment(payment);
                 return Ok(payment);
             }
@@ -99,25 +113,25 @@ namespace Donuts.Controllers
             }
         }
 
-        // POST: api/routines
+        // POST: api/payment
         [HttpPost]
         [Produces(typeof(DbSet<Payment>))]
-        public async Task<IActionResult> PostDomain([FromBody] Payment payment)
+        public async Task<IActionResult> PostPayment([FromBody] Payment payment)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            if(payment.Amount <= 0)
+            {
+                return BadRequest("Payment amount can't be 0");
+            }
             if (payment.Customer == null || payment.CustomerId == null)
             {
                 return BadRequest("payment is not associated with a valid user");
             }
-            var dueDate = GetLastDayOfMonth();
-            if(payment.DueDate != dueDate)
-            {
-                return BadRequest("Due Date is not at the last day of the Month");
-            }
+            payment.DueDate = GetLastDayOfMonth();
 
             var customer = _customerRepository.GetCustomer(payment.CustomerId).Result;
             if (customer == null)
@@ -130,6 +144,7 @@ namespace Donuts.Controllers
             return CreatedAtAction("GetPayment", new { id = payment.PaymentId}, payment);
         }
 
+        // Doesn't account if last day of the month is today.
         private DateTime GetLastDayOfMonth()
         {
             DateTime date = DateTime.Today;

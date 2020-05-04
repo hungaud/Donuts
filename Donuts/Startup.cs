@@ -36,7 +36,7 @@ namespace Donuts
             services.AddMvc();
             services.AddMvcCore().AddDataAnnotations();
 
-            services.AddDbContext<DonutsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Development")));
+            //services.AddDbContext<DonutsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Development")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

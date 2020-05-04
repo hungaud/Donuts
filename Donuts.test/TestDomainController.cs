@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
 using Donuts.Models.Enums;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
 
-namespace DonutsTest
+namespace Donuts.test
 {
     public class TestDomainController
     {
@@ -107,7 +105,7 @@ namespace DonutsTest
 
             // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
-            SimulateModelValidation(domainDTO, controller);
+            SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
             // Assert
@@ -137,7 +135,7 @@ namespace DonutsTest
 
             // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
-            SimulateModelValidation(domainDTO, controller);
+            SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
             // Assert
@@ -180,7 +178,7 @@ namespace DonutsTest
 
             // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
-            SimulateModelValidation(domainDTO, controller);
+            SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PutDomain("abcdefghi.software", TimeDuration.YEAR, 1, domainDTO);
 
             // Assert
@@ -208,7 +206,7 @@ namespace DonutsTest
 
             // Act
             var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
-            SimulateModelValidation(domainDTO, controller);
+            SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PutDomain("abcdefgzzzzzz", TimeDuration.YEAR, 1, domainDTO);
 
             // Assert
@@ -216,16 +214,16 @@ namespace DonutsTest
         }
 
         // Handles Data Annotation validation
-        private void SimulateModelValidation(object model, DomainsController controller)
-        {
-            var validationContext = new ValidationContext(model, null, null);
-            var validationResults = new List<ValidationResult>();
-            Validator.TryValidateObject(model, validationContext, validationResults, true);
-            foreach (var validationResult in validationResults)
-            {
-                controller.ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
-            }
-        }
+        //private void SimulateModelValidation(object model, DomainsController controller)
+        //{
+        //    var validationContext = new ValidationContext(model, null, null);
+        //    var validationResults = new List<ValidationResult>();
+        //    Validator.TryValidateObject(model, validationContext, validationResults, true);
+        //    foreach (var validationResult in validationResults)
+        //    {
+        //        controller.ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
+        //    }
+        //}
 
         private List<Domain> CreateDomainTestData()
         {

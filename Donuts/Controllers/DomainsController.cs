@@ -44,7 +44,7 @@ namespace Donuts.Controllers
             return Ok(domain);
         }
 
-        // GET: api/Patients/
+        // GET: api/Domain/
         [HttpGet("{username:alpha}")]
         [Produces(typeof(DbSet<Domain>))]
         public async Task<IActionResult> GetDomain([FromRoute] string name)
@@ -131,7 +131,7 @@ namespace Donuts.Controllers
             }
         }
 
-        // POST: api/routines
+        // POST: api/domain
         [HttpPost("{timeduration}/{length}")]
         [Produces(typeof(DbSet<Domain>))]
         public async Task<IActionResult> PostDomain([FromBody] Domain domain, [FromRoute] TimeDuration timeduration, [FromRoute] int length)
