@@ -10,7 +10,7 @@ so that way it decouples domain controller calling payment controller.
 
 3.) I had customer hold publickey and or ContactId so customers can register domain as long as they sign up. and by signing up, they can get verified.
 Customers when they sign up are subjected to being verified. if they are not verified, that means Creating a domain will fail.
-because the ContactId and ProviderName will be null. Once they're verified, then it wont be null.
+because the ProviderName will be null. Once they're verified, then it wont be null.
 
 
 4.) For domain model. I only restricted to minimum of 10 characters. but for more security, there should be max len and regex to verify valid one so no bad
