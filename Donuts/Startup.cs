@@ -33,6 +33,8 @@ namespace Donuts
             services.AddMvc().AddJsonOptions(option => option.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddScoped<IDomainRepository, DomainRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IVerificationProviderRepository, VerificationProviderRepository>();
             services.AddMvc();
             services.AddMvcCore().AddDataAnnotations();
 
