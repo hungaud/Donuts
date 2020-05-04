@@ -8,8 +8,10 @@ the Domain object would already have the date there. But the prompt has Period o
 2.) I had Payment on a different controller so the front end, when it calls post or put methods, it should know to call payment controller to update payment
 so that way it decouples domain controller calling payment controller.
 
-3.) I had customer hold either publickey and or ContactId so customers can register domain as long as they sign up. and by signing up, they can get verified.
-post method was not implemented for customers but that was the idea. Customers can have multiple Domains.
+3.) I had customer hold publickey and or ContactId so customers can register domain as long as they sign up. and by signing up, they can get verified.
+Customers when they sign up are subjected to being verified. if they are not verified, that means Creating a domain will fail.
+because the ContactId and ProviderName will be null. Once they're verified, then it wont be null.
+
 
 4.) For domain model. I only restricted to minimum of 10 characters. but for more security, there should be max len and regex to verify valid one so no bad
 input such as "----". 

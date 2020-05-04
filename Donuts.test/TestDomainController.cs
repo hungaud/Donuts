@@ -35,7 +35,7 @@ namespace Donuts.test
                 .Returns(CreateCustomerData());
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             var result = controller.GetAllDomain() as OkObjectResult;
             var test = result.Value as IEnumerable<Domain>;
             var list = test.ToList();
@@ -58,7 +58,7 @@ namespace Donuts.test
                 .ReturnsAsync(CreateDomainTestData()[0]);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             var result = await controller.GetDomain(1);
 
             // Assert
@@ -82,7 +82,7 @@ namespace Donuts.test
                 .ReturnsAsync(CreateDomainTestData()[0]);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             var result = await controller.GetDomain("abcdefghi.software");
 
             // Assert
@@ -113,7 +113,7 @@ namespace Donuts.test
                 .Returns(CreateVerificationProvider());
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
@@ -147,7 +147,7 @@ namespace Donuts.test
                 .Returns(CreateVerificationProvider());
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
@@ -174,7 +174,7 @@ namespace Donuts.test
                 .ReturnsAsync(customerDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
@@ -196,7 +196,7 @@ namespace Donuts.test
                 .ReturnsAsync(domainDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             var result = await controller.DeleteDomain(domainDTO.DomainId);
 
             // Assert
@@ -220,7 +220,7 @@ namespace Donuts.test
                 .ReturnsAsync(customerDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PutDomain("abcdefghi.software", TimeDuration.YEAR, 1, domainDTO);
 
@@ -250,7 +250,7 @@ namespace Donuts.test
                 .ReturnsAsync(customerDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object, mockVerifyRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             SimulateModelValidation.Validate(domainDTO, controller);
             var result = await controller.PutDomain("abcdefgzzzzzz", TimeDuration.YEAR, 1, domainDTO);
 

@@ -20,14 +20,11 @@ namespace Donuts.Controllers
 
         IDomainRepository _domainRepository;
         ICustomerRepository _customerRepository;
-        IVerificationProviderRepository _verificationProviderRepository;
 
-        public DomainsController (IDomainRepository domainRepository, ICustomerRepository customerRepository, 
-            IVerificationProviderRepository verificationProviderRepository)
+        public DomainsController (IDomainRepository domainRepository, ICustomerRepository customerRepository)
         {
             _domainRepository = domainRepository;
             _customerRepository = customerRepository;
-            _verificationProviderRepository = verificationProviderRepository;
         }
 
         [HttpGet("{id}")]
@@ -155,24 +152,9 @@ namespace Donuts.Controllers
                 return BadRequest("customer is not valid for domain");
             }
 
-            // verify Customer's Contact-ID
-            // This is where it would verify public key as well, but it is not implemented.
-            if(!string.IsNullOrEmpty(customer.ProviderName))
+            if(string.IsNullOrEmpty(customer.ContactId) || string.IsNullOrEmpty(customer.ProviderName))
             {
-                var providers = _verificationProviderRepository.GetAllByName(customer.ProviderName);
-                var verified = providers.Where(p => p.Format.IsMatch(customer.ContactId));
-                if(verified.Count() == 0)
-                {
-                    return BadRequest("No valid verification from Customer");
-                }
-            } else
-            {
-                var providers = _verificationProviderRepository.GetAllProviders();
-                var verified = providers.Where(p => p.Format.IsMatch(customer.ContactId));
-                if (verified.Count() == 0)
-                {
-                    return BadRequest("No valid verification from Customer");
-                }
+                return BadRequest("Customer is not verified yet");
             }
 
             var today = DateTime.Today;

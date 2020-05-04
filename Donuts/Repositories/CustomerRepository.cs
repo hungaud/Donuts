@@ -10,6 +10,7 @@ namespace Donuts.Repositories
     {
         Task<Customer> GetCustomer(int id);
         IEnumerable<Customer> GetAllCustomers();
+        Task<Customer> AddCustomer(Customer customer);
     }
 
     public class CustomerRepository : ICustomerRepository
@@ -20,6 +21,13 @@ namespace Donuts.Repositories
         public CustomerRepository(DonutsContext context)
         {
             _context = context;
+        }
+
+        public async Task<Customer> AddCustomer(Customer customer)
+        {
+            await _context.Customer.AddAsync(customer);
+            await _context.SaveChangesAsync();
+            return customer;
         }
 
         public IEnumerable<Customer> GetAllCustomers()
