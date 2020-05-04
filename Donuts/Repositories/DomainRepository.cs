@@ -57,7 +57,7 @@ namespace Donuts.Repositories
 
         public async Task<Domain> GetDomain(string name)
         {
-            return _context.Domain.Where(d => d.Name.Equals(name)).FirstOrDefault();
+            return await _context.Domain.Where(d => d.Name == name).FirstOrDefaultAsync();
         }
 
         public async Task<Domain> UpdateDomain(Domain domain)

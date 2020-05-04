@@ -53,14 +53,14 @@ namespace Donuts.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var domain = _domainRepository.GetDomain(name);
+            var domain = await _domainRepository.GetDomain(name);
 
             if (domain == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(domain);
+            return Ok(domain);
         }
 
         // GET: api/domain/fromcustomer/5
@@ -145,6 +145,9 @@ namespace Donuts.Controllers
             {
                 return BadRequest("customer is not valid for domain");
             }
+
+            var today = DateTime.Today;
+            domain.ExperiationDate = timeduration == TimeDuration.YEAR ? today.AddYears(length) : today.AddMonths(length);
 
             await _domainRepository.AddDomain(domain);
 

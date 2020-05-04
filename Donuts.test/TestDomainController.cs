@@ -10,6 +10,7 @@ using Xunit;
 using System.Linq;
 using Donuts.Models.Enums;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace DonutsTest
 {
@@ -26,14 +27,14 @@ namespace DonutsTest
         {
             // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
-            var mockUserRepo = new Mock<ICustomerRepository>();
+            var mockCustomerRepo = new Mock<ICustomerRepository>();
             mockDomainRepo.Setup(repo => repo.GetAllDomains())
                 .Returns(CreateDomainTestData());
-            mockUserRepo.Setup(repo => repo.GetAllCustomers())
+            mockCustomerRepo.Setup(repo => repo.GetAllCustomers())
                 .Returns(CreateCustomerData());
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockUserRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             var result = await controller.GetAllDomain() as OkObjectResult;
             var test = result.Value as IEnumerable<Domain>;
             var list = test.ToList();
@@ -41,7 +42,6 @@ namespace DonutsTest
             // Assert
             Assert.Equal(2, list.Count);
             Assert.NotNull(result);
-
         }
 
 
@@ -50,13 +50,13 @@ namespace DonutsTest
         {
             // Arrange
             var mockDomainRepo = new Mock<IDomainRepository>();
-            var mockUserRepo = new Mock<ICustomerRepository>();
+            var mockCustomerRepo = new Mock<ICustomerRepository>();
 
             mockDomainRepo.Setup(repo => repo.GetDomain(1))
                 .ReturnsAsync(CreateDomainTestData()[0]);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockUserRepo.Object);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
             var result = await controller.GetDomain(1);
 
             // Assert
@@ -69,54 +69,99 @@ namespace DonutsTest
         }
 
         [Fact]
-        public void TestPostDomain()
+        public async Task TestGetDomainByName()
         {
-            var dto = new Domain()
-            {
-                DomainId = 1,
-                Name = "abcdefghi.software",
-                RegistrationDate = DateTime.Today,
-                CustomerId = 1,
-                Customer = new Customer()
-                {
-                    CustomerId = 1,
-                    CustomerName = "user1"
-                }
-            };
+            // Arrange
+            var mockDomainRepo = new Mock<IDomainRepository>();
+            var mockCustomerRepo = new Mock<ICustomerRepository>();
 
-            TestPostDomains(dto);
-            TestPostDomains(dto);
+            mockDomainRepo.Setup(repo => repo.GetDomain("abcdefghi.software"))
+                .ReturnsAsync(CreateDomainTestData()[0]);
+
+            // Act
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var result = await controller.GetDomain("abcdefghi.software");
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var res = Assert.IsType<Domain>(okResult.Value);
+            var idea = res as Domain;
+            Assert.Equal(1, idea.DomainId);
+            Assert.Equal("abcdefghi.software", idea.Name);
+            Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
         }
 
         [Fact]
-#pragma warning disable xUnit1001 // Fact methods cannot have parameters
-        public async Task TestPostDomains(Domain dto)
-#pragma warning restore xUnit1001 // Fact methods cannot have parameters
+        public async Task TestPostDomainsValidDomainName()
         {
             // Arrange
-
-
-            var experiationDuration = TimeDuration.YEAR;
-            int experiationLength = 1;
-            DateTime today = DateTime.Today;
-
-            dto.ExperiationDate = experiationDuration == TimeDuration.YEAR ? today.AddYears(experiationLength) : today.AddMonths(experiationLength);
+            var domainDTO = CreateDomainTestData()[0];
+            var customerDTO = CreateCustomerData()[0];
 
             var mockDomainRepo = new Mock<IDomainRepository>();
-            var mockUserRepo = new Mock<ICustomerRepository>();
-            mockDomainRepo.Setup(repo => repo.AddDomain(dto))
-                .ReturnsAsync(dto);
-            mockUserRepo.Setup(repo => repo.GetCustomer(1))
-                .ReturnsAsync(CreateCustomerData()[0]);
-
+            var mockCustomerRepo = new Mock<ICustomerRepository>();
+            mockDomainRepo.Setup(repo => repo.AddDomain(domainDTO))
+                .ReturnsAsync(domainDTO);
+            mockCustomerRepo.Setup(repo => repo.GetCustomer(1))
+                .ReturnsAsync(customerDTO);
 
             // Act
-            var controller = new DomainsController(mockDomainRepo.Object, mockUserRepo.Object);
-            SimulateModelValidation(dto, controller);
-            var result = await controller.PostDomain(dto, TimeDuration.YEAR, 1);
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            SimulateModelValidation(domainDTO, controller);
+            var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
 
             // Assert
             var okResult = Assert.IsType<CreatedAtActionResult>(result);
+            var res = Assert.IsType<Domain>(okResult.Value);
+            var idea = res as Domain;
+            Assert.Equal(1, idea.DomainId);
+            Assert.Equal("abcdefghi.software", idea.Name);
+            Assert.Equal(DateTime.Today.AddYears(1), idea.ExperiationDate);
+        }
+
+        // Should fail due to Domain name is < 10 characters
+        [Fact]
+        public async Task TestPostInvalidDomainName()
+        {
+            // Arrange
+            var domainDTO = CreateDomainTestData()[1];
+            var customerDTO = CreateCustomerData()[0];
+
+
+            var mockDomainRepo = new Mock<IDomainRepository>();
+            var mockCustomerRepo = new Mock<ICustomerRepository>();
+            mockDomainRepo.Setup(repo => repo.AddDomain(domainDTO))
+                .ReturnsAsync(domainDTO);
+            mockCustomerRepo.Setup(repo => repo.GetCustomer(1))
+                .ReturnsAsync(customerDTO);
+
+            // Act
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            SimulateModelValidation(domainDTO, controller);
+            var result = await controller.PostDomain(domainDTO, TimeDuration.YEAR, 1);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task TestDeleteDomain()
+        {
+            var domainDTO = CreateDomainTestData()[0];
+            var customerDTO = CreateCustomerData()[0];
+
+            var mockDomainRepo = new Mock<IDomainRepository>();
+            var mockCustomerRepo = new Mock<ICustomerRepository>();
+
+            mockDomainRepo.Setup(repo => repo.DeleteDomain(domainDTO.DomainId))
+                .ReturnsAsync(domainDTO);
+
+            // Act
+            var controller = new DomainsController(mockDomainRepo.Object, mockCustomerRepo.Object);
+            var result = await controller.GetDomain(domainDTO.DomainId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
             var res = Assert.IsType<Domain>(okResult.Value);
             var idea = res as Domain;
             Assert.Equal(1, idea.DomainId);
@@ -139,10 +184,10 @@ namespace DonutsTest
         private List<Domain> CreateDomainTestData()
         {
             var session = new List<Domain>();
+            //valid name
             session.Add(new Domain()
             {
                 DomainId = 1,
-                ExperiationDate = DateTime.Today.AddYears(1),
                 Name = "abcdefghi.software",
                 RegistrationDate = DateTime.Today,
                 CustomerId = 1,
@@ -152,11 +197,13 @@ namespace DonutsTest
                     CustomerName = "user1"
                 }
             });
+
+            // invalid name
             session.Add(new Domain()
             {
                 DomainId = 2,
                 ExperiationDate = DateTime.Today.AddYears(1),
-                Name = "123456789.software",
+                Name = "abc",
                 RegistrationDate = DateTime.Today,
                 CustomerId = 1,
                 Customer = new Customer()
@@ -165,7 +212,6 @@ namespace DonutsTest
                     CustomerName = "user1"
                 }
             });
-
             return session;
         }
 
