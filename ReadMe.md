@@ -22,7 +22,7 @@ Recurring means indefinite until user cancels.
 
 6.) I had a verfication provider model as well because providers could have many different format, or different public key for hashing/decryption etc.
 
-7.) my Put method in domain, I wanted to pass multiple objects from body but i couldn't figure out how to test it with postman so I used Routes for now.
+7.) my Put and Post method in domain, I wanted to pass multiple objects from body but i couldn't figure out how to test it with postman so I used Routes for now.
 also not sure whats the most correct way so will read into that after this assessment.
 
 8.) post and put domain, Ideally I would like to update the domains expiration date on the front end and have it sent back as new object and 

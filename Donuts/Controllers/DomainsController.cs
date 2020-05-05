@@ -90,11 +90,10 @@ namespace Donuts.Controllers
             return Ok(domain);
         }
 
-        [HttpPut("{username:alpha/{timeduration}/{length}}")]
-        [HttpPost("{timeduration}/{length}")]
+        [HttpPut("{username:alpha")]
         [Produces(typeof(Domain))]
-        public async Task<IActionResult> PutDomain([FromRoute] string name, [FromRoute] TimeDuration timeduration, 
-            [FromRoute] int length, [FromBody] Domain domain)
+        public async Task<IActionResult> PutDomain([FromRoute] string name, [FromBody] TimeDuration timeduration, 
+            [FromBody] int length, [FromBody] Domain domain)
         {
             if (!ModelState.IsValid)
             {
@@ -132,9 +131,9 @@ namespace Donuts.Controllers
         }
 
         // POST: api/domain
-        [HttpPost("{timeduration}/{length}")]
+        [HttpPost]
         [Produces(typeof(DbSet<Domain>))]
-        public async Task<IActionResult> PostDomain([FromBody] Domain domain, [FromRoute] TimeDuration timeduration, [FromRoute] int length)
+        public async Task<IActionResult> PostDomain([FromBody] Domain domain, [FromBody] TimeDuration timeduration, [FromBody] int length)
         {
 
             if (!ModelState.IsValid)
