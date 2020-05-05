@@ -26,18 +26,13 @@ namespace Donuts.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetCustomer()
+        public IActionResult GetCustomer()
             {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             var customer = _customerRepository.GetAllCustomers();
-
-            if (customer == null)
-            {
-                return NotFound();
-            }
 
             return Ok(customer);
         }
